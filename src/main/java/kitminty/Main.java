@@ -16,27 +16,22 @@ public class Main {
 
         FloatBuffer buffer = memAllocFloat(3 * 2);
 
-
         int vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+        buffer.put(-0.5f).put(-0.5f);
+        buffer.put(+0.5f).put(-0.5f);
+        buffer.put(+0.0f).put(+0.5f);
+
+        buffer.flip();
+
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+        memFree(buffer);
 
         glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(2, GL_FLOAT, 0, 0L);
 
-        double Test = 0.5;
-
         while (!glfwWindowShouldClose(window)) {
-            Test -= 0.1;
-
-            buffer.put((float)-Test).put(-0.5f);
-            buffer.put(+0.5f).put(-0.5f);
-            buffer.put(+0.0f).put(+0.5f);
-
-            buffer.flip();
-
-            glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-            memFree(buffer);
-
             glfwPollEvents();
             glDrawArrays(GL_TRIANGLES, 0, 3);
             glfwSwapBuffers(window);
@@ -45,9 +40,14 @@ public class Main {
         System.out.println("Fin.");
     }
 
-    public static void maketriangle(FloatBuffer buffer, double x1, double y1, double x2, double y2, double x3, double y3) {
-
+    public static double lemx(double t) {
+         return ((2*Math.cos(t))/(3-Math.cos(2*t)));
     }
+
+    public static double lemy(double t) {
+        return ((Math.sin(2*t))/(3-Math.cos(2*t)));
+    }
+
 
     private static long createWindow() {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
