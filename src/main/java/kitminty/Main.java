@@ -9,7 +9,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11C.glViewport;
 
-
+//Isaac was here
 public class Main {
      static void main() {
         glfwInit();
@@ -34,26 +34,17 @@ public class Main {
         glfwSwapInterval(1); // How many draws to swap the buffer
         glfwShowWindow(id); // Shows the window
 
-        double Time = 0.0;
         while(!glfwWindowShouldClose(id)) {
-            Time += 0.01;
-            renderPolygon(Time);
+            renderPolygon();
 
             glfwSwapBuffers(id);
             glfwPollEvents();
         }
     }
 
-    static void renderPolygon(double Time) {
+    static void renderPolygon() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         /*
-        glBegin(GL_LINE_STRIP);
-        glColor3f(1.0f, 0.3f, 0.3f);
-        glVertex2f(0.0f, 0.0f);
-        glVertex2f((float)lemx(Time), (float)lemy(Time));
-        glEnd();
-         */
-
         glLineWidth(10.0f); //for GL_LINE_STRIP
         glPointSize(10.0f); //for GL_POINTS
 
@@ -65,16 +56,33 @@ public class Main {
 
         glBegin(GL_POINTS);
         glColor3f(0.3f, 1.0f, 1.0f);
-        glVertex2f(0.0f, 0.0f);
         glVertex2f((float)lemx(Time), (float)lemy(Time));
         glEnd();
+
+        glBegin(GL_POLYGON);
+        glColor3f(0.3f, 1.0f, 1.0f);
+        glVertex2f(0.5f,0.5f);
+        glVertex2f(-0.5f,0.5f);
+        glVertex2f(-0.5f,-0.5f);
+        glVertex2f(0.5f,-0.5f);
+        glEnd();
+        */
+
+        glBegin(GL_LINES);
+        glColor3f(0.3f, 1.0f, 1.0f);
+        for(double i=0.0; i<Math.TAU; i += 0.01) {
+            glVertex2f((float)lemx(i),(float)lemy(i));
+            glVertex2f((float)lemx(i+0.01),(float)lemy(i+0.01));
+        }
+        glEnd();
+
     }
 
     public static double lemx(double t) {
-        return ((2*Math.cos(t))/(3-Math.cos(2*t)));
+        return 0.8*((2*Math.cos(t))/(3-Math.cos(2*t)));
     }
 
     public static double lemy(double t) {
-        return ((Math.sin(2*t))/(3-Math.cos(2*t)));
+        return 0.8*((Math.sin(2*t))/(3-Math.cos(2*t)));
     }
 }
