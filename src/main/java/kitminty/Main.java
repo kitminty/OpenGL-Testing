@@ -14,7 +14,7 @@ public class Main {
      static void main() {
         glfwInit();
 
-        String title = "MyTitle"; // The title of the window, WARNING, if title is
+        String title = "GVF-V"; // The title of the window, WARNING, if title is
         // null, the code will segfault at glfwCreateWindow()
         boolean resizable = true; // Whether or not the window is resizable
 
@@ -34,24 +34,38 @@ public class Main {
         glfwSwapInterval(1); // How many draws to swap the buffer
         glfwShowWindow(id); // Shows the window
 
+
+        double Time = 0.0;
         while(!glfwWindowShouldClose(id)) {
-            renderPolygon();
+            Time += 0.1;
+            renderPolygon(Time);
 
             glfwSwapBuffers(id);
             glfwPollEvents();
         }
     }
 
-    static void renderPolygon() {
-        glBegin(GL_LINE_STRIP);
-        glColor3f(1.0f, 0.3f, 0.3f);
-        glColor3f(0.8f, 0.8f, 0.8f);
-        glVertex2f(-0.5f, -0.5f);
-        glEnd();
+    static void renderPolygon(double Time) {
+        /*
         glBegin(GL_LINE_STRIP);
         glColor3f(1.0f, 0.3f, 0.3f);
         glVertex2f(-0.5f, +0.5f);
         glVertex2f(+0.0f, +0.5f);
         glEnd();
+         */
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glBegin(GL_LINE_STRIP);
+        glColor3f(0.3f, 1.0f, 1.0f);
+        glVertex2f(0.0f, 0.0f);
+        glVertex2f((float)lemx(Time), (float)lemy(Time));
+        glEnd();
+    }
+
+    public static double lemx(double t) {
+        return ((2*Math.cos(t))/(3-Math.cos(2*t)));
+    }
+
+    public static double lemy(double t) {
+        return ((Math.sin(2*t))/(3-Math.cos(2*t)));
     }
 }
