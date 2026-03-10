@@ -18,8 +18,8 @@ public class Main {
         // null, the code will segfault at glfwCreateWindow()
         boolean resizable = true; // Whether or not the window is resizable
 
-        int m_width = 1024; // width of the window
-        int m_height = 768; // height of the window
+        int m_width = 512; // width of the window
+        int m_height = 512; // height of the window
 
         glfwDefaultWindowHints(); // Loads GLFW's default window settings
         glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE); // Sets window to be visible
@@ -34,10 +34,9 @@ public class Main {
         glfwSwapInterval(1); // How many draws to swap the buffer
         glfwShowWindow(id); // Shows the window
 
-
         double Time = 0.0;
         while(!glfwWindowShouldClose(id)) {
-            Time += 0.1;
+            Time += 0.01;
             renderPolygon(Time);
 
             glfwSwapBuffers(id);
@@ -46,15 +45,25 @@ public class Main {
     }
 
     static void renderPolygon(double Time) {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         /*
         glBegin(GL_LINE_STRIP);
         glColor3f(1.0f, 0.3f, 0.3f);
-        glVertex2f(-0.5f, +0.5f);
-        glVertex2f(+0.0f, +0.5f);
+        glVertex2f(0.0f, 0.0f);
+        glVertex2f((float)lemx(Time), (float)lemy(Time));
         glEnd();
          */
-        glClear(GL_COLOR_BUFFER_BIT);
+
+        glLineWidth(10.0f); //for GL_LINE_STRIP
+        glPointSize(10.0f); //for GL_POINTS
+
         glBegin(GL_LINE_STRIP);
+        glColor3f(1.0f, 0.3f, 0.3f);
+        glVertex2f(0.0f, 0.0f);
+        glVertex2f((float)lemx(Time), (float)lemy(Time));
+        glEnd();
+
+        glBegin(GL_POINTS);
         glColor3f(0.3f, 1.0f, 1.0f);
         glVertex2f(0.0f, 0.0f);
         glVertex2f((float)lemx(Time), (float)lemy(Time));
