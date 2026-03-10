@@ -17,26 +17,18 @@ public class Main {
      static void main() {
         glfwInit();
 
-        String title = "GVF-V"; // The title of the window, WARNING, if title is
-        // null, the code will segfault at glfwCreateWindow()
-        boolean resizable = true; // Whether or not the window is resizable
-
-        int m_width = 512; // width of the window
-        int m_height = 512; // height of the window
 
         glfwDefaultWindowHints(); // Loads GLFW's default window settings
         glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE); // Sets window to be visible
-        glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE); // Sets whether the window is resizable
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // Sets whether the window is resizable
 
-        long id = glfwCreateWindow(m_width, m_height, title, NULL, NULL); // Does the actual window creation
-        if ( id == NULL ) throw new RuntimeException("Failed to create window");
+        long id = glfwCreateWindow(512, 512, "GVF-V", NULL, NULL); // Does the actual window creation
 
         glfwMakeContextCurrent(id); // glfwSwapInterval needs a context on the calling thread, otherwise will cause NO_CURRENT_CONTEXT error
         GL.createCapabilities(); // Will let lwjgl know we want to use this context as the context to draw with
 
         glfwSwapInterval(1); // How many draws to swap the buffer
         glfwShowWindow(id); // Shows the window
-
 
         while(!glfwWindowShouldClose(id)) {
             renderPolygon(id);
