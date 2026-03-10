@@ -1,62 +1,57 @@
 package kitminty;
 
-import java.nio.FloatBuffer;
 
-import static org.lwjgl.opengl.GL.*;
-import static org.lwjgl.system.MemoryUtil.*;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.opengl.GL;
+
+import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11C.glViewport;
+
 
 public class Main {
-
-     static void main(String[] args) {
+     static void main() {
         glfwInit();
 
-        long window = createWindow();
+        String title = "MyTitle"; // The title of the window, WARNING, if title is
+        // null, the code will segfault at glfwCreateWindow()
+        boolean resizable = true; // Whether or not the window is resizable
 
-        FloatBuffer buffer = memAllocFloat(3 * 2);
+        int m_width = 1024; // width of the window
+        int m_height = 768; // height of the window
 
-        int vbo = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glfwDefaultWindowHints(); // Loads GLFW's default window settings
+        glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE); // Sets window to be visible
+        glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE); // Sets whether the window is resizable
 
-        buffer.put(-0.5f).put(-0.5f);
-        buffer.put(+0.5f).put(-0.5f);
-        buffer.put(+0.0f).put(+0.5f);
+        long id = glfwCreateWindow(m_width, m_height, title, NULL, NULL); // Does the actual window creation
+        if ( id == NULL ) throw new RuntimeException("Failed to create window");
 
-        buffer.flip();
+        glfwMakeContextCurrent(id); // glfwSwapInterval needs a context on the calling thread, otherwise will cause NO_CURRENT_CONTEXT error
+        GL.createCapabilities(); // Will let lwjgl know we want to use this context as the context to draw with
 
-        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-        memFree(buffer);
+        glfwSwapInterval(1); // How many draws to swap the buffer
+        glfwShowWindow(id); // Shows the window
 
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(2, GL_FLOAT, 0, 0L);
+        while(!glfwWindowShouldClose(id)) {
+            renderPolygon();
 
-        while (!glfwWindowShouldClose(window)) {
+            glfwSwapBuffers(id);
             glfwPollEvents();
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-            glfwSwapBuffers(window);
         }
-        glfwTerminate();
-        System.out.println("Fin.");
     }
 
-    public static double lemx(double t) {
-         return ((2*Math.cos(t))/(3-Math.cos(2*t)));
-    }
-
-    public static double lemy(double t) {
-        return ((Math.sin(2*t))/(3-Math.cos(2*t)));
-    }
-
-
-    private static long createWindow() {
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-        long window = glfwCreateWindow(800, 600, "Intro2", NULL, NULL);
-
-        glfwMakeContextCurrent(window);
-
-        createCapabilities();
-
-        return window;
+    static void renderPolygon() {
+        glBegin(GL_LINE_STRIP);
+        glColor3f(1.0f, 0.3f, 0.3f);
+        glColor3f(0.8f, 0.8f, 0.8f);
+        glVertex2f(-0.5f, -0.5f);
+        glEnd();
+        glBegin(GL_LINE_STRIP);
+        glColor3f(1.0f, 0.3f, 0.3f);
+        glVertex2f(-0.5f, +0.5f);
+        glVertex2f(+0.0f, +0.5f);
+        glEnd();
     }
 }
