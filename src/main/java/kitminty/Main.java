@@ -55,12 +55,20 @@ public class Main {
         glBegin(GL_LINES);
         glColor3f(0.3f, 1.0f, 1.0f);
         for(double i=0.0; i<Math.TAU; i += 0.01) {
-            glVertex2f((float)lemx(i,0.8, 0),(float)lemy(i,0.8, 0));
-            glVertex2f((float)lemx(i+0.01,0.8, 0),(float)lemy(i+0.01,0.8, 0));
+            glVertex2f((float)lemx(i,ZoomCurve(Zoom), 0),(float)lemy(i,ZoomCurve(Zoom), 0));
+            glVertex2f((float)lemx(i+0.01,ZoomCurve(Zoom), 0),(float)lemy(i+0.01,ZoomCurve(Zoom), 0));
         }
         glEnd();
 
         System.out.println(Zoom);
+    }
+
+    public double ZoomCurve(double Input) {
+        if(Input <= 0) {
+            return 1/Math.abs(Input-1);
+        } else {
+            return Input+1;
+        }
     }
 
     public double GetCursorPosX(long WindowID) {
