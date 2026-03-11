@@ -8,7 +8,6 @@ import org.lwjgl.opengl.GL;
 import java.awt.*;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 
 import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.GLFW.*;
@@ -16,6 +15,9 @@ import static org.lwjgl.opengl.GL11.*;
 
 //Isaac was here
 public class Main {
+
+    double Zoom = 0;
+
     void main() {
         glfwInit();
 
@@ -53,14 +55,13 @@ public class Main {
         glBegin(GL_LINES);
         glColor3f(0.3f, 1.0f, 1.0f);
         for(double i=0.0; i<Math.TAU; i += 0.01) {
-            glVertex2f((float)lemx(i),(float)lemy(i));
-            glVertex2f((float)lemx(i+0.01),(float)lemy(i+0.01));
+            glVertex2f((float)lemx(i,0.8, 0),(float)lemy(i,0.8, 0));
+            glVertex2f((float)lemx(i+0.01,0.8, 0),(float)lemy(i+0.01,0.8, 0));
         }
         glEnd();
+
         System.out.println(Zoom);
     }
-
-    double Zoom = 0;
 
     public double GetCursorPosX(long WindowID) {
          DoubleBuffer posX = BufferUtils.createDoubleBuffer(1);
@@ -85,11 +86,11 @@ public class Main {
         return posY.get();
     }
 
-    public double lemx(double t) {
-        return 0.8*((2*Math.cos(t))/(3-Math.cos(2*t)));
+    public double lemx(double time, double zoom, double xoffset) {
+        return zoom*((2*Math.cos(time))/(3-Math.cos(2*time)))+xoffset;
     }
 
-    public double lemy(double t) {
-        return 0.8*((Math.sin(2*t))/(3-Math.cos(2*t)));
+    public double lemy(double time, double zoom, double yoffset) {
+        return zoom*((Math.sin(2*time))/(3-Math.cos(2*time)))+yoffset;
     }
 }
