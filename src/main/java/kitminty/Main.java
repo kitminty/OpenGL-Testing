@@ -17,6 +17,15 @@ import static org.lwjgl.opengl.GL11.*;
 public class Main {
 
     double Zoom = 0;
+    double StartPosX = 0;
+    double StartPosY = 0;
+    double EndPosX = 0;
+    double EndPosY = 0;
+    double PosX = 0;
+    double PosY = 0;
+    double CurrentPosX = 0;
+    double CurrentPosY = 0;
+    boolean WasPressed = false;
 
     void main() {
         glfwInit();
@@ -39,10 +48,12 @@ public class Main {
 
             glfwSwapBuffers(id);
             glfwPollEvents();
+
+            DragLogic(id);
         }
     }
 
-    void renderPolygon(long WindowID) {
+    public void renderPolygon(long WindowID) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //resets the frame every loop
 
         glfwSetScrollCallback(WindowID, new GLFWScrollCallback() { //finds zoom by finding scroll amount
@@ -55,12 +66,29 @@ public class Main {
         glBegin(GL_LINES);
         glColor3f(0.3f, 1.0f, 1.0f);
         for(double i=0.0; i<Math.TAU; i += 0.01) {
-            glVertex2f((float)lemx(i,ZoomCurve(Zoom), 0),(float)lemy(i,ZoomCurve(Zoom), 0));
-            glVertex2f((float)lemx(i+0.01,ZoomCurve(Zoom), 0),(float)lemy(i+0.01,ZoomCurve(Zoom), 0));
+            glVertex2f((float)lemx(i,ZoomCurve(Zoom), PosX),(float)lemy(i,ZoomCurve(Zoom), PosY));
+            glVertex2f((float)lemx(i+0.01,ZoomCurve(Zoom), PosX),(float)lemy(i+0.01,ZoomCurve(Zoom), PosY));
         }
         glEnd();
+    }
 
-        System.out.println(Zoom);
+    public void DragLogic(long WindowID) {
+        if (glfwGetMouseButton(WindowID, 0) == GLFW_PRESS && !WasPressed) {
+            StartPosX = GetCursorPosX(WindowID);
+            StartPosY = GetCursorPosY(WindowID);
+        }
+        WasPressed = glfwGetMouseButton(WindowID, 0) == GLFW_PRESS;
+
+        EndPosX = GetCursorPosX(WindowID);
+        EndPosY = GetCursorPosY(WindowID);
+
+        if (glfwGetMouseButton(WindowID, 0) == GLFW_PRESS) {
+            PosX = (EndPosX-StartPosX)+CurrentPosX;
+            PosY = (EndPosY-StartPosY)+CurrentPosY;
+        } else {
+            CurrentPosX = PosX;
+            CurrentPosY = PosY;
+        }
     }
 
     public double ZoomCurve(double Input) {
