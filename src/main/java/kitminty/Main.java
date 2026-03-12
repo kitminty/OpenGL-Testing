@@ -17,14 +17,14 @@ import static org.lwjgl.opengl.GL11.*;
 public class Main {
 
     double Zoom = 0;
-    double StartPosX = 0;
-    double StartPosY = 0;
-    double EndPosX = 0;
-    double EndPosY = 0;
-    double PosX = 0;
-    double PosY = 0;
-    double CurrentPosX = 0;
-    double CurrentPosY = 0;
+    double MouseInstPosX = 0;
+    double MouseInstPosY = 0;
+    static double MousePosX = 0;
+    static double MousePosY = 0;
+    static double ScreenPosX = 0;
+    static double ScreenPosY = 0;
+    double ScreenCurrentPosX = 0;
+    double ScreenCurrentPosY = 0;
     boolean WasPressed = false;
 
     void main() {
@@ -43,15 +43,15 @@ public class Main {
         glfwShowWindow(id); // Shows the window
 
         while(!glfwWindowShouldClose(id)) {
-            RenderPolygon(id);
-            DragLogic(id);
+            RenderLoop(id);
+            ScreenDragLogic(id);
 
             glfwSwapBuffers(id);
             glfwPollEvents();
         }
     }
 
-    public void RenderPolygon(long WindowID) {
+    public void RenderLoop(long WindowID) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //resets the frame every loop
 
         glfwSetScrollCallback(WindowID, new GLFWScrollCallback() { //finds zoom by finding scroll amount
@@ -64,28 +64,29 @@ public class Main {
         glBegin(GL_LINES);
         glColor3f(0.3f, 1.0f, 1.0f);
         for(double i=0.0; i<Math.TAU; i += 0.01) {
-            glVertex2f((float)lemx(i,ZoomCurve(Zoom), PosX),(float)lemy(i,ZoomCurve(Zoom), PosY));
-            glVertex2f((float)lemx(i+0.01,ZoomCurve(Zoom), PosX),(float)lemy(i+0.01,ZoomCurve(Zoom), PosY));
+            glVertex2d(lemx(i,ZoomCurve(Zoom), ScreenPosX), lemy(i,ZoomCurve(Zoom), ScreenPosY));
+            glVertex2d(lemx(i+0.01,ZoomCurve(Zoom), ScreenPosX), lemy(i+0.01,ZoomCurve(Zoom), ScreenPosY));
         }
         glEnd();
     }
 
-    public void DragLogic(long WindowID) {
+    public void ScreenDragLogic(long WindowID) {
         if (glfwGetMouseButton(WindowID, 0) == GLFW_PRESS && !WasPressed) {
-            StartPosX = GetCursorPosX(WindowID);
-            StartPosY = GetCursorPosY(WindowID);
+            MouseInstPosX = GetCursorPosX(WindowID);
+            MouseInstPosY = GetCursorPosY(WindowID);
         }
         WasPressed = glfwGetMouseButton(WindowID, 0) == GLFW_PRESS;
 
-        EndPosX = GetCursorPosX(WindowID);
-        EndPosY = GetCursorPosY(WindowID);
+        MousePosX = GetCursorPosX(WindowID);
+        MousePosY = GetCursorPosY(WindowID);
+
 
         if (glfwGetMouseButton(WindowID, 0) == GLFW_PRESS) {
-            PosX = (EndPosX-StartPosX)+CurrentPosX;
-            PosY = (EndPosY-StartPosY)+CurrentPosY;
+            ScreenPosX = (MousePosX-MouseInstPosX)+ScreenCurrentPosX;
+            ScreenPosY = (MousePosY-MouseInstPosY)+ScreenCurrentPosY;
         } else {
-            CurrentPosX = PosX;
-            CurrentPosY = PosY;
+            ScreenCurrentPosX = ScreenPosX;
+            ScreenCurrentPosY = ScreenPosY;
         }
     }
 
