@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL;
 import java.awt.*;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.GLFW.*;
@@ -27,9 +28,9 @@ public class Main {
     double ScreenCurrentPosY = 0;
     boolean WasPressed = false;
     static boolean ScreenShouldMove = true;
+    double NumPoints = 2;
 
-    PointInstance point1 = new PointInstance();
-    PointInstance point2 = new PointInstance();
+    ArrayList<PointInstance> Points = new ArrayList<>();
 
     void main() {
         glfwInit();
@@ -45,6 +46,10 @@ public class Main {
 
         glfwSwapInterval(1); // How many draws to swap the buffer
         glfwShowWindow(id); // Shows the window
+
+        for (int i=0; i<=NumPoints; i++) {
+            Points.add(new PointInstance());
+        }
 
         while(!glfwWindowShouldClose(id)) {
             ScreenDragLogic(id);
@@ -64,17 +69,16 @@ public class Main {
                 Zoom = Zoom + yoffset/2;
             }
         });
-
         glBegin(GL_LINES);
         glColor3f(0.3f, 1.0f, 1.0f);
-        for(double i=0.0; i<Math.TAU; i += 0.01) {
-            glVertex2d(lemx(i, ZoomCurve(Zoom), ScreenPosX), lemy(i,ZoomCurve(Zoom), ScreenPosY));
-            glVertex2d(lemx(i+0.01, ZoomCurve(Zoom), ScreenPosX), lemy(i+0.01,ZoomCurve(Zoom), ScreenPosY));
+        for(double i=0; i<1; i += 0.01) {
+            glVertex2d(LerpX(Points, i, ZoomCurve(Zoom), ScreenPosX), LerpY(Points, i, ZoomCurve(Zoom), ScreenPosY));
+            glVertex2d(LerpX(Points, i+0.01, ZoomCurve(Zoom), ScreenPosX), LerpY(Points, i+0.01, ZoomCurve(Zoom), ScreenPosY));
         }
         glEnd();
 
-        point1.PointLogic(WindowID, ZoomCurve(Zoom), ScreenPosX, ScreenPosY, 1.0, 0.3, 0.3, 10);
-        point2.PointLogic(WindowID, ZoomCurve(Zoom), ScreenPosX, ScreenPosY, 0.3, 1.0, 0.3, 10);
+        Points.get(1).PointLogic(WindowID, ZoomCurve(Zoom), ScreenPosX, ScreenPosY, 1.0, 0.3, 0.3, 10);
+        Points.get(2).PointLogic(WindowID, ZoomCurve(Zoom), ScreenPosX, ScreenPosY, 0.3, 1.0, 0.3, 10);
     }
 
     public void ScreenDragLogic(long WindowID) {
@@ -120,13 +124,19 @@ public class Main {
         glfwGetWindowSize(WindowID, posX, null);
         return posX.get();
     }
-
     public int WindowSizeY(long WindowID) {
         IntBuffer posY = BufferUtils.createIntBuffer(1);
         glfwGetWindowSize(WindowID, null, posY);
         return posY.get();
     }
 
+    public double LerpX(ArrayList<PointInstance> pointlist, double time, double zoom, double xoffset) {
+        return zoom*(pointlist.get(1).PointPosX+(pointlist.get(2).PointPosX-pointlist.get(1).PointPosX)*time)+xoffset;
+    }
+    public double LerpY(ArrayList<PointInstance> pointlist, double time, double zoom, double yoffset) {
+        return zoom*(pointlist.get(1).PointPosY+(pointlist.get(2).PointPosY-pointlist.get(1).PointPosY)*time)+yoffset;
+    }
+    /*
     public double lemx(double time, double zoom, double xoffset) {
         return zoom*((2*Math.cos(time))/(3-Math.cos(2*time)))+xoffset;
     }
@@ -134,4 +144,5 @@ public class Main {
     public double lemy(double time, double zoom, double yoffset) {
         return zoom*((Math.sin(2*time))/(3-Math.cos(2*time)))+yoffset;
     }
+     */
 }

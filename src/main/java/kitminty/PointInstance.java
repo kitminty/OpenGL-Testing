@@ -19,7 +19,7 @@ public class PointInstance {
         glVertex2d((PointPosX*zoom+xoffset), (PointPosY*zoom+yoffset));
         glEnd();
 
-        PointIsClicked = glfwGetMouseButton(WindowID, 0) == GLFW_PRESS && Math.hypot(((MousePosX - PointPosX*zoom) - xoffset), ((MousePosY - PointPosY*zoom) - yoffset)) < 0.02/zoom;
+        PointIsClicked = glfwGetMouseButton(WindowID, 0) == GLFW_PRESS && Math.hypot(((MousePosX - PointPosX*zoom) - xoffset), ((MousePosY - PointPosY*zoom) - yoffset)) < 0.02;
         if (PointIsClicked && !WasClicked) {
             Main.ScreenShouldMove = !Main.ScreenShouldMove;
             PointShouldMove = !Main.ScreenShouldMove;
