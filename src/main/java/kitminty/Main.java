@@ -28,7 +28,7 @@ public class Main {
     double ScreenCurrentPosY = 0;
     boolean WasPressed = false;
     static boolean ScreenShouldMove = true;
-    double NumPoints = 2;
+    int NumPoints = 4;
 
     ArrayList<PointInstance> Points = new ArrayList<>();
 
@@ -72,13 +72,15 @@ public class Main {
         glBegin(GL_LINES);
         glColor3f(0.3f, 1.0f, 1.0f);
         for(double i=0; i<1; i += 0.01) {
-            glVertex2d(LerpX(Points, i, ZoomCurve(Zoom), ScreenPosX), LerpY(Points, i, ZoomCurve(Zoom), ScreenPosY));
-            glVertex2d(LerpX(Points, i+0.01, ZoomCurve(Zoom), ScreenPosX), LerpY(Points, i+0.01, ZoomCurve(Zoom), ScreenPosY));
+            glVertex2d(RecursiveBezierX(Points, NumPoints, 1, i, ZoomCurve(Zoom), ScreenPosX), RecursiveBezierY(Points, NumPoints, 1, i, ZoomCurve(Zoom), ScreenPosY));
+            glVertex2d(RecursiveBezierX(Points, NumPoints, 1, i+0.01, ZoomCurve(Zoom), ScreenPosX), RecursiveBezierY(Points, NumPoints, 1, i+0.01, ZoomCurve(Zoom), ScreenPosY));
         }
         glEnd();
 
         Points.get(1).PointLogic(WindowID, ZoomCurve(Zoom), ScreenPosX, ScreenPosY, 1.0, 0.3, 0.3, 10);
         Points.get(2).PointLogic(WindowID, ZoomCurve(Zoom), ScreenPosX, ScreenPosY, 0.3, 1.0, 0.3, 10);
+        Points.get(3).PointLogic(WindowID, ZoomCurve(Zoom), ScreenPosX, ScreenPosY, 0.3, 0.3, 1.0, 10);
+        Points.get(4).PointLogic(WindowID, ZoomCurve(Zoom), ScreenPosX, ScreenPosY, 1.0, 1.0, 1.0, 10);
     }
 
     public void ScreenDragLogic(long WindowID) {
@@ -130,17 +132,31 @@ public class Main {
         return posY.get();
     }
 
-    public double LerpX(ArrayList<PointInstance> pointlist, double time, double zoom, double xoffset) {
-        return zoom*(pointlist.get(1).PointPosX+(pointlist.get(2).PointPosX-pointlist.get(1).PointPosX)*time)+xoffset;
+    public double LerpX(double ax, double bx, double t) {
+        return ax+(bx-ax)*t;
     }
-    public double LerpY(ArrayList<PointInstance> pointlist, double time, double zoom, double yoffset) {
-        return zoom*(pointlist.get(1).PointPosY+(pointlist.get(2).PointPosY-pointlist.get(1).PointPosY)*time)+yoffset;
+    public double LerpY(double ay, double by, double t) {
+        return ay+(by-ay)*t;
+    }
+//Half Gaunt was here
+    public double RecursiveBezierX(ArrayList<PointInstance> pointlist, int num, int index, double time, double zoom, double xoffset) {
+        if (num == 1) {
+            return pointlist.get(index).PointPosX;
+        } else {
+            return LerpX(RecursiveBezierX(pointlist, num-1, index, time, zoom, xoffset),RecursiveBezierX(pointlist, num-1, index+1, time, zoom, xoffset),time);
+        }
+    }
+    public double RecursiveBezierY(ArrayList<PointInstance> pointlist, int num, int index, double time, double zoom, double yoffset) {
+        if (num == 1) {
+            return pointlist.get(index).PointPosY;
+        } else {
+            return LerpY(RecursiveBezierY(pointlist, num-1, index, time, zoom, yoffset),RecursiveBezierY(pointlist, num-1, index+1, time, zoom, yoffset),time);
+        }
     }
     /*
     public double lemx(double time, double zoom, double xoffset) {
         return zoom*((2*Math.cos(time))/(3-Math.cos(2*time)))+xoffset;
     }
-
     public double lemy(double time, double zoom, double yoffset) {
         return zoom*((Math.sin(2*time))/(3-Math.cos(2*time)))+yoffset;
     }
